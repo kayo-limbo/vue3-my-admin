@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getUserList, setUserList} from '@/utils/storage'
+import { getUserList} from '@/utils/storage'
 import { getUsers, deleteUserApi, editorUser, addUser } from '@/api/user'
 const formRef = ref()
 const rules = {
@@ -101,8 +101,6 @@ const form = ref<User>({
 })
 async function deleteUser(id: number) {
   await deleteUserApi(id)
-  userList.value=userList.value.filter(user=>user.id!==id)
-  setUserList(userList.value)
   userList.value=await getUsers()
 }
 const editUser = (user: User) => {

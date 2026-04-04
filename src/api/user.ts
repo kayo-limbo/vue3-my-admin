@@ -1,4 +1,5 @@
 import { getUserList, setUserList } from '@/utils/storage'
+import axios from 'axios';
 
 interface User {
   id: number;
@@ -67,5 +68,12 @@ export const login = (data: { username: string; password: string }) => {
         reject({ message: '用户名或密码错误' })
       }
     }, 300)
+  })
+}
+export const updatepassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({ success: true })
+    }, 500)
   })
 }
