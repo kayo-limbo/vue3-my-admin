@@ -1,6 +1,6 @@
 import { getUserList, setUserList } from '@/utils/storage'
-import axios from 'axios';
-
+import axios from '@/axios.ts';
+import { supabase } from '@/utils/supabase'
 interface User {
   id: number;
   name: string;
@@ -17,7 +17,35 @@ let userList: User[] = getUserList().length ? getUserList() : [
 const saveToStorage = () => {
   setUserList(userList)
 }
-
+export const login = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+export const register = async (email: string, password: string) => {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password
+  })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
+export const updatePassword = async (newPassword: string) => {
+  const { data, error } = await supabase.auth.updateUser({
+    password: newPassword
+  })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
 // 获取用户列表
 export const getUsers = (): Promise<User[]> => {
   return new Promise((resolve) => {
@@ -59,21 +87,24 @@ export const deleteUserApi = (id: number): Promise<boolean> => {
   })
 }
 
-export const login = (data: { username: string; password: string }) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (data.username === 'admin' && data.password === '123456') {
-        resolve({ token: 'mock-token-123' })
-      } else {
-        reject({ message: '用户名或密码错误' })
-      }
-    }, 300)
-  })
-}
-export const updatepassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({ success: true })
-    }, 500)
-  })
-}
+// export const login = (data: { username: string; password: string }) => {
+//   return new Promise((resolve, reject) => {
+//     setTimeout(() => {
+//       if (data.username === 'admin' && data.password === '123456') {
+//         resolve({ token: 'mock-token-123' })
+//       } else {
+//         reject({ message: '用户名或密码错误' })
+//       }
+//     }, 300)
+//   })
+// }
+// export const updatepassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve({ success: true })
+//     }, 500)
+//   })
+// }
+// export const updatePassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
+//   return axios.post("/admin/updatePassword", data)
+// }

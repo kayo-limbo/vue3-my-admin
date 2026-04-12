@@ -2,8 +2,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 import { ref, reactive } from "vue";
-import { updatepassword } from "@/api/user";
-
+import { updatePassword } from "@/api/user";
 export const usehanlelogout = () => {
   const store = useStore();
   const router = useRouter();
@@ -11,10 +10,8 @@ export const usehanlelogout = () => {
     store.commit('RESET_STATE')
     localStorage.clear()
     sessionStorage.clear()
-
-    // localStorage.removeItem('token')
-    router.replace('/login')
     ElMessage.success('退出登录成功')
+    router.replace('/login')
   }
   return {
     handleLogout
@@ -44,7 +41,7 @@ export const userefreshpassword = () => {
           ElMessage.error('两次输入密码不一致')
           return
         }
-        updatepassword(form).then((res: any) => {
+        updatePassword(form.newPassword).then((res: any) => {
           ElMessage.success('修改密码成功,请重新登录')
           showEditPassword.value = false
           handleLogout()

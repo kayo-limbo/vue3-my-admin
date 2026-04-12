@@ -3,7 +3,10 @@
     <span>
       <el-icon><Place /></el-icon>
       后台管理
-      <el-icon><Fold /></el-icon>
+      <el-icon @click="handleAsideWidth">
+        <Fold v-if="store.state.asideWidth === '250px'"/>
+        <Expand v-else />
+      </el-icon>
       <el-icon @click="handleRefresh"><Refresh /></el-icon>
         <el-tooltip
         effect="dark"
@@ -53,7 +56,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import {Fold, FullScreen, Place, Refresh, ArrowDown} from "@element-plus/icons-vue";
+import {Fold, FullScreen, Place, Refresh, ArrowDown, Expand} from "@element-plus/icons-vue";
 import { usehanlelogout, userefreshpassword, usehandleRefresh } from "@/composable/useManager";
 import { useStore } from "vuex";
 
@@ -62,7 +65,9 @@ const store = useStore();
 // 从store中获取用户信息
 const userName = computed(() => store.state.user.name || '管理员')
 const userAvatar = computed(() => store.state.user.avatar || '')
-
+const handleAsideWidth = () => {
+  store.commit('handleAsideWidth')
+}
 // 使用composable函数
 const { handleLogout } = usehanlelogout();
 const { form, formRef, showEditPassword, openPasswordDialog, onSubmit, rules } = userefreshpassword();
@@ -92,7 +97,7 @@ const { handleRefresh } = usehandleRefresh();
 }
 
 .header > span .el-icon {
-  font-size: 18px;
+  font-size: 24px !important;
   color: #606266;
   cursor: pointer;
   transition: all 0.3s;
@@ -151,7 +156,7 @@ const { handleRefresh } = usehandleRefresh();
 }
 
 .el-icon--right {
-  font-size: 12px;
+  font-size: 14px;
   color: #909399;
   transition: transform 0.3s;
 }

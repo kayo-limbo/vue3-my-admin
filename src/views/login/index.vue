@@ -33,7 +33,7 @@
             <el-button 
               type="primary" 
               class="login-btn" 
-              @click="handleLogin"
+              @click="handleSubmit"
             >
               登 录
             </el-button>
@@ -67,23 +67,51 @@ const form = ref({
   username: '',
   password: '',
 })
-const handleLogin = async () => {
+const handleSubmit = async () => {
   formRef.value.validate(async (valid: boolean) => {
     if (!valid) return
     try {
-      const res: any = await login(form.value)
-      localStorage.setItem('token', res.token)
+      // const res: any = await login({
+      //   username: form.value.username,
+      //   password: form.value.password
+      // })
+      // localStorage.setItem('token', res.token)
       
       // 更新store中的用户信息
+      const res = await login(form.value.username, form.value.password)
+      // 存储token
+      if (res.session?.access_token) {
+        localStorage.setItem('token', res.session.access_token)
+      }
       store.commit('SET_USERINFO', {
-        name: form.value.username,
+        name: res.user?.email || form.value.username,
         avatar: ''
       })
+      // 设置菜单数据
+      const menus = [
+        {
+          name: '首页',
+          icon: 'HomeFilled',
+          frontpath: '/dashboard'
+        },
+        {
+          name: '商品管理',
+          icon: 'Goods',
+          frontpath: '/goods/list'
+        },
+        {
+          name: '用户管理',
+          icon: 'User',
+          frontpath: '/user/list'
+        }
+      ]
+      store.commit('SET_MENUS', menus)
       
       ElMessage.success('登录成功')
       router.replace('/dashboard')
-    } catch (err) {
-      ElMessage.error('登录失败')
+    } catch (err: any) {
+      console.log('登录失败:', err)
+      ElMessage.error(err.message || '登录失败，请稍后重试')
     }
   })
 }
