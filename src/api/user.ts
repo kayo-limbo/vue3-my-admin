@@ -1,5 +1,5 @@
 import { getUserList, setUserList } from '@/utils/storage'
-import axios from '@/axios.ts';
+import { serverApi } from '@/utils/request'
 import { supabase } from '@/utils/supabase'
 interface User {
   id: number;
@@ -17,15 +17,20 @@ let userList: User[] = getUserList().length ? getUserList() : [
 const saveToStorage = () => {
   setUserList(userList)
 }
-export const login = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  })
-  if (error) {
-    throw new Error(error.message)
+export type LoginResult = {
+  token: string
+  user: { id: number; username: string; email: string }
+}
+
+export const login = async (email: string, password: string): Promise<LoginResult> => {
+  try {
+    const { data } = await serverApi.post<LoginResult>('/login', { email, password })
+    return data
+  } catch (err: unknown) {
+    const ax = err as { response?: { data?: { message?: string } } }
+    const msg = ax.response?.data?.message ?? '登录失败，请稍后重试'
+    throw new Error(msg)
   }
-  return data
 }
 export const register = async (email: string, password: string) => {
   const { data, error } = await supabase.auth.signUp({
@@ -86,7 +91,6 @@ export const deleteUserApi = (id: number): Promise<boolean> => {
     resolve(true)
   })
 }
-
 // export const login = (data: { username: string; password: string }) => {
 //   return new Promise((resolve, reject) => {
 //     setTimeout(() => {

@@ -10,9 +10,11 @@
       <el-main style="padding: 0; flex: 1;">
         <FTagList />
         <router-view v-slot="{Component}">
-          <keep-alive :max="10">
+         <transition name="fade">
+           <keep-alive :max="10">
             <component :is="Component" />
           </keep-alive>
+         </transition>
         </router-view>
       </el-main>
     </el-container>
@@ -45,4 +47,20 @@ body, html {
 .el-aside {
   transition: all 0.2s; 
 }
+.fade-enter-from{
+  opacity: 0;
+}
+.fade-enter-to{
+  opacity: 1;
+}
+.fade-leave-from{
+  opacity: 1;
+}
+.fade-leave-to{
+  opacity: 0;
+}
+.fade-enter-active{
+  transition-delay: 0.3s;
+}
+
 </style>

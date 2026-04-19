@@ -1,5 +1,6 @@
 <template>
   <router-view />
+ 
 </template>
 
 <script setup lang="ts">
@@ -12,6 +13,7 @@ html, body {
   padding: 0;
   height: 100%;
   width: 100%;
+  background-color: #f3f2f2;
 }
 
 #app {

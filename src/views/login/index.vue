@@ -12,10 +12,11 @@
             <p>请登录您的账号</p>
           </div>
           
-          <el-form-item prop="username">
+          <el-form-item prop="email">
             <el-input 
-              v-model="form.username" 
-              placeholder="请输入用户名" 
+              v-model="form.email" 
+              type="email"
+              placeholder="请输入邮箱账号" 
             />
           </el-form-item>
           
@@ -51,11 +52,11 @@ import { login } from '@/api/user'
 // import { setToken } from '@/utils/auth'
 import { ElMessage } from 'element-plus'
 import { useStore } from 'vuex'
-
+//
 const store = useStore()
 const formRef = ref()
 const rules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 const router = useRouter()
@@ -64,27 +65,24 @@ const router = useRouter()
 //   router.push('/dashboard')
 // }
 const form = ref({
-  username: '',
+  email: '',
   password: '',
 })
 const handleSubmit = async () => {
   formRef.value.validate(async (valid: boolean) => {
     if (!valid) return
     try {
-      // const res: any = await login({
-      //   username: form.value.username,
-      //   password: form.value.password
-      // })
-      // localStorage.setItem('token', res.token)
-      
       // 更新store中的用户信息
-      const res = await login(form.value.username, form.value.password)
-      // 存储token
-      if (res.session?.access_token) {
-        localStorage.setItem('token', res.session.access_token)
+      const res = await login(form.value.email, form.value.password)
+      const accessToken = res.token
+      if (!accessToken) {
+        throw new Error('未获取到登录令牌，请重试')
       }
+      // 存储 token（同时更新 vuex，避免状态不同步）
+      localStorage.setItem('token', accessToken)
+      store.commit('SET_TOKEN', accessToken)
       store.commit('SET_USERINFO', {
-        name: res.user?.email || form.value.username,
+        name: res.user?.username || res.user?.email || form.value.email,
         avatar: ''
       })
       // 设置菜单数据

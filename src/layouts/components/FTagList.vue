@@ -74,7 +74,7 @@ const removeTab = (targetName: string) => {
 
   const tabs = editableTabs.value
   let activeName = editableTabsValue.value
-
+//获得激活的标签页名称
   if (activeName === targetName) {
     tabs.forEach((tab, index) => {
       if (tab.name === targetName) {
@@ -85,7 +85,7 @@ const removeTab = (targetName: string) => {
       }
     })
   }
-
+//赋值,过滤,跳转
   editableTabsValue.value = activeName
   editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
   router.push(activeName) // 关闭后跳转到新的激活页
@@ -110,8 +110,8 @@ const handleCloseAction = (command: 'other' | 'all') => {
 
 <style scoped>
 .f-tag-list {
-  position: fixed;
-  top: 70px;
+  position: sticky;
+  /* top: 70px; */
   right: 0;
   display: flex;
   align-items: center;
@@ -182,23 +182,3 @@ const handleCloseAction = (command: 'other' | 'all') => {
   align-items: center;
 }
 </style>
-.f-tag-list {
-  position: fixed;
-  top: 64px; /* 如果还是重合，请增加到 65px 或检查 Header 高度 */
-  right: 0;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  height: 44px;
-  z-index: 99; /* 确保低于 Header 但高于内容区 */
-  background-color: #f3f4f6; /* 改成浅灰色，不要用深灰 */
-}
-
-/* 移除 Tab 底部自带的灰色线条，让它更干净 */
-
-
-/* 激活状态下 Tab1 也会有蓝色文字反应 */
-:deep(.el-tabs__item.is-active) {
-  background-color: #fff;
-  color: #409eff;
-}

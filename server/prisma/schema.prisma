@@ -1,0 +1,19 @@
+// 1. 生成器配置
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 2. 数据库连接配置（全文件只能有一个 datasource）
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+ 
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}

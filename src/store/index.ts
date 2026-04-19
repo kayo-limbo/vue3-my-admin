@@ -1,7 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createStore } from 'vuex'
-const store = createStore({
+import type { User } from '@supabase/supabase-js'
+
+// 定义 State 类型，彻底避开类型推导错误
+interface RootState {
+  user: Partial<User> | Record<string, any>
+  token: string
+  asideWidth: string
+  menus: any[]
+  ruleNames: string[]
+}
+
+const store = createStore<RootState>({
   state() {
-    // 菜单列表
     return {
       user: {},
       token: localStorage.getItem('token') || '',
@@ -12,27 +23,28 @@ const store = createStore({
   },
 
   mutations: {
-    SET_TOKEN(state: any, token: string) {
+    SET_TOKEN(state: RootState, token: string) {
       state.token = token
       localStorage.setItem('token', token)
     },
-    SET_USERINFO(state: any, user: any) {
+    SET_USERINFO(state: RootState, user: any) {
       state.user = user
     },
-    RESET_STATE(state: any) {
+    RESET_STATE(state: RootState) {
       state.user = {}
       state.token = ''
       localStorage.removeItem('token')
     },
-    handleAsideWidth(state: any) {
+    handleAsideWidth(state: RootState) {
       state.asideWidth = state.asideWidth === '250px' ? '64px' : '250px'
     },
-    SET_MENUS(state: any, menus: any) {
+    SET_MENUS(state: RootState, menus: any[]) {
       state.menus = menus
     },
-    SET_RULENAMES(state: any, ruleNames: any) {
+    SET_RULENAMES(state: RootState, ruleNames: string[]) {
       state.ruleNames = ruleNames
     }
   }
 })
+
 export default store
