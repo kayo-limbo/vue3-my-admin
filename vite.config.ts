@@ -26,8 +26,9 @@ export default defineConfig({
       },
       // 本地 Express + Prisma（默认 3000 端口）
       '/local-api': {
-        target: 'http://127.0.0.1:3000',
+        target: 'http://127.0.0.1:3001',
         changeOrigin: true,
+        // 本地代理到本机后端时去掉 `/local-api` 前缀，保持与后端路由一致
         rewrite: (path) => path.replace(/^\/local-api/, ''),
       },
     }

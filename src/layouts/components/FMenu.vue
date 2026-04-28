@@ -45,13 +45,6 @@ const handleSelect = (index: string) => {
     router.push(index)
   }
 }
-interface MenuItem {
-  name: string;
-  icon: any;
-  frontpath?: string;
-  child?: MenuItem[];
-}
-
 const asideMenus = computed(() => store.state.menus)
 const isCollapse = computed(() => store.state.asideWidth === '64px')
 const formatMenus = (list:any[]) => {

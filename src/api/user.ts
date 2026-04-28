@@ -24,7 +24,7 @@ export type LoginResult = {
 
 export const login = async (email: string, password: string): Promise<LoginResult> => {
   try {
-    const { data } = await serverApi.post<LoginResult>('/login', { email, password })
+    const { data } = await serverApi.post<LoginResult>('/api/login', { email, password })
     return data
   } catch (err: unknown) {
     const ax = err as { response?: { data?: { message?: string } } }

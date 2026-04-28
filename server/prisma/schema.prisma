@@ -17,3 +17,67 @@ model User {
   password  String
   createdAt DateTime @default(now())
 }
+
+// 新增 Order 模型，用于统计图表（映射到底层表名 `orders`）
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  status    Int?
+  amount    Float?
+
+  @@map("orders")
+}
+// 1. 导航菜单表 (左侧)
+model Menu {
+  id    Int     @id @default(autoincrement())
+  name String
+  icon  String
+  url   String?
+  parentId Int?
+  order Int     @default(0) // 用于排序
+}
+
+// 2. 快捷入口表 (中间彩色图案)
+model Nav {
+  id          Int     @id @default(autoincrement())
+  title       String
+  icon        String?
+  color       String?
+  path        String?
+  order_index Int?
+
+  @@map("nav")
+}
+
+// 3. Dashboard 相关表
+model dashboard_order {
+  id          Int     @id @default(autoincrement())
+  title       String
+  unit        String
+  unit_color  String?
+  value       Int?
+  sub_title   String?
+  sub_value   String?
+  order_index Int?
+
+  @@map("dashboard_order")
+}
+
+model dashboard_goods {
+  id     Int    @id @default(autoincrement())
+  title  String
+  status Int?
+  stock  Int?
+
+  @@map("dashboard_goods")
+}
+
+model dashboard_orders {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  title     String?
+  status    Int?
+  amount    Float?
+
+  @@map("dashboard_orders")
+}
