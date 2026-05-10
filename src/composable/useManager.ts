@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useUserStore } from '@/store/index'
 import { ElMessage } from 'element-plus'
 import { ref, reactive } from 'vue'
 import { onMounted } from 'vue'
@@ -13,10 +13,10 @@ type ApiResponse<T> = {
 }
 
 export const usehanlelogout = () => {
-  const store = useStore()
+  const store = useUserStore()
   const router = useRouter()
   const handleLogout = () => {
-    store.commit('RESET_STATE')
+    store.resetState()
     localStorage.clear()
     sessionStorage.clear()
     ElMessage.success('退出登录成功')

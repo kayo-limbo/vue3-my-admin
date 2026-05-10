@@ -3,7 +3,7 @@
     <el-card>
       <!-- <div style="display: flex; justify-content: space-between; align-items: center;"> -->
     <h2>用户管理</h2>
-    <el-button type="primary" @click="openAdd">新增用户</el-button>
+    <el-button type="primary" @click="openAdd" v-permission="['user:add']">新增用户</el-button>
    <el-table :data="userList" style="width: 100%">
   <el-table-column prop="id" label="ID" width="80" />
   <el-table-column prop="name" label="姓名" />
@@ -16,8 +16,8 @@
 
   <el-table-column label="操作">
     <template #default="scope">
-      <el-button size="small" @click="editUser(scope.row)">编辑</el-button>
-      <el-button size="small" type="danger" @click="deleteUser(scope.row.id)">删除</el-button>
+      <el-button size="small" @click="editUser(scope.row)" >编辑</el-button>
+      <el-button size="small" type="danger" @click="deleteUser(scope.row.id)" v-permission="['user:delete']">删除</el-button>
     </template>
   </el-table-column>
 </el-table>

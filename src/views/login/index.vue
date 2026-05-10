@@ -48,18 +48,17 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import {ref} from 'vue'
+import {useUserStore} from '@/store/index'
 import { login } from '@/api/user'
 // import { setToken } from '@/utils/auth'
 import { ElMessage } from 'element-plus'
-import { useStore } from 'vuex'
-//
-const store = useStore()
 const formRef = ref()
 const rules = {
   email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
 const router = useRouter()
+const userStore = useUserStore()
 // const goHome = () => {
 //   setToken()
 //   router.push('/dashboard')
@@ -80,11 +79,8 @@ const handleSubmit = async () => {
       }
       // 存储 token（同时更新 vuex，避免状态不同步）
       localStorage.setItem('token', accessToken)
-      store.commit('SET_TOKEN', accessToken)
-      store.commit('SET_USERINFO', {
-        name: res.user?.username || res.user?.email || form.value.email,
-        avatar: ''
-      })
+      userStore.setToken(res.token)
+      await userStore.fetchUserPermissions()
       // 设置菜单数据
       const menus = [
         {
@@ -103,7 +99,7 @@ const handleSubmit = async () => {
           frontpath: '/user/list'
         }
       ]
-      store.commit('SET_MENUS', menus)
+     
       
       ElMessage.success('登录成功')
       router.replace('/dashboard')

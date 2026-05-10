@@ -1,9 +1,11 @@
 import express, { type RequestHandler } from 'express'
 import orderRoutes from './routes/orders'
+// import userRoutes from './routes/user'
 import menuRoutes from './routes/menus'
 import dashboardRoutes from './routes/dashboard'
 import navRoutes from './routes/nav'
 import cors from 'cors'
+import userRoutes from './routes/user'
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 /** 与 jwt.sign 时写入的 payload 一致，供路由里使用 */
@@ -18,7 +20,7 @@ declare module 'express-serve-static-core' {
     authUser?: JwtUserPayload
   }
 }
-
+// const userRoutes = require('./routes/user'); 
 const app = express()
 app.use(cors())
 app.use(express.json())
@@ -26,6 +28,7 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/menus', menuRoutes)
 app.use('/api/dashboard', dashboardRoutes)
 app.use('/api/nav', navRoutes)
+ // 添加用户相关路由;
 
 // 打印当前 Node 进程 PID，便于确认哪个进程在监听端口
 console.log('[server] pid=', process.pid)
@@ -59,7 +62,7 @@ const requireAuth: RequestHandler = (req, res, next) => {
     return res.status(401).json({ message: '登录已失效，请重新登录' })
   }
 }
-
+app.use('/api/user', requireAuth, userRoutes)
 // 跨域与 JSON 解析中间件（已在文件顶部注册）
 
 // 获取用户列表：必须带有效 JWT（示例：受保护接口）

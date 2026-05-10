@@ -1,50 +1,95 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createStore } from 'vuex'
-import type { User } from '@supabase/supabase-js'
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { getUserInfoApi } from '@/api/user'
 
-// 定义 State 类型，彻底避开类型推导错误
-interface RootState {
-  user: Partial<User> | Record<string, any>
-  token: string
-  asideWidth: string
-  menus: any[]
-  ruleNames: string[]
+/**
+ * 1. 定义后端接口返回结构
+ */
+interface UserInfoResponse {
+  code: number;
+  data: {
+    username: string;
+    rulesName: string[]; // 后端字段名
+  };
+  message?: string;
 }
 
-const store = createStore<RootState>({
-  state() {
-    return {
-      user: {},
-      token: localStorage.getItem('token') || '',
-      asideWidth: '250px',
-      menus: [],
-      ruleNames: []
-    }
-  },
+/**
+ * 2. 使用 Setup Store 语法 (推荐)
+ * 这种写法可以彻底避开 'this' 指向不明导致的类型报错
+ */
+export const useUserStore = defineStore('user', () => {
+  // --- 状态 (State) ---
+  const userInfo = ref<{ username?: string } | null>(null)
+  const token = ref(localStorage.getItem('token') || '')
+  const asideWidth = ref('250px')
+  const menus = ref<any[]>([])
+  const ruleNames = ref<string[]>([]) // 前端使用的权限数组
 
-  mutations: {
-    SET_TOKEN(state: RootState, token: string) {
-      state.token = token
-      localStorage.setItem('token', token)
-    },
-    SET_USERINFO(state: RootState, user: any) {
-      state.user = user
-    },
-    RESET_STATE(state: RootState) {
-      state.user = {}
-      state.token = ''
-      localStorage.removeItem('token')
-    },
-    handleAsideWidth(state: RootState) {
-      state.asideWidth = state.asideWidth === '250px' ? '64px' : '250px'
-    },
-    SET_MENUS(state: RootState, menus: any[]) {
-      state.menus = menus
-    },
-    SET_RULENAMES(state: RootState, ruleNames: string[]) {
-      state.ruleNames = ruleNames
+  // --- 逻辑 (Actions) ---
+
+  /**
+   * 获取并同步用户权限
+   */
+  const fetchUserPermissions = async () => {
+    try {
+      // 显式断言类型，解决 AxiosResponse 上不存在 code 的报错
+      const response = await getUserInfoApi() as unknown as UserInfoResponse
+      
+      if (response.code === 200) {
+        const { username, rulesName } = response.data
+        
+        // Setup 语法直接修改 .value，无需 this
+        userInfo.value = { username }
+        ruleNames.value = rulesName || []
+        
+        console.log('✅ 权限同步成功:', ruleNames.value)
+        return ruleNames.value
+      }
+    } catch (error) {
+      console.error('❌ 获取权限失败:', error)
+      throw error
     }
+  }
+
+  /**
+   * 设置 Token
+   */
+  const setToken = (newToken: string) => {
+    token.value = newToken
+    localStorage.setItem('token', newToken)
+  }
+
+  /**
+   * 切换侧边栏宽度
+   */
+  const handleAsideWidth = () => {
+    asideWidth.value = asideWidth.value === '250px' ? '64px' : '250px'
+  }
+
+  /**
+   * 重置状态 (退出登录)
+   */
+  const resetState = () => {
+    userInfo.value = null
+    token.value = ''
+    ruleNames.value = []
+    localStorage.removeItem('token')
+  }
+
+  return {
+    userInfo,
+    token,
+    asideWidth,
+    menus,
+    ruleNames,
+    fetchUserPermissions,
+    setToken,
+    handleAsideWidth,
+    resetState
   }
 })
 
-export default store
+
+export default useUserStore

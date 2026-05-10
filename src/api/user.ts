@@ -1,6 +1,7 @@
 import { getUserList, setUserList } from '@/utils/storage'
 import { serverApi } from '@/utils/request'
 import { supabase } from '@/utils/supabase'
+import request from '@/utils/request'
 interface User {
   id: number;
   name: string;
@@ -32,16 +33,7 @@ export const login = async (email: string, password: string): Promise<LoginResul
     throw new Error(msg)
   }
 }
-export const register = async (email: string, password: string) => {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password
-  })
-  if (error) {
-    throw new Error(error.message)
-  }
-  return data
-}
+
 export const updatePassword = async (newPassword: string) => {
   const { data, error } = await supabase.auth.updateUser({
     password: newPassword
@@ -91,24 +83,10 @@ export const deleteUserApi = (id: number): Promise<boolean> => {
     resolve(true)
   })
 }
-// export const login = (data: { username: string; password: string }) => {
-//   return new Promise((resolve, reject) => {
-//     setTimeout(() => {
-//       if (data.username === 'admin' && data.password === '123456') {
-//         resolve({ token: 'mock-token-123' })
-//       } else {
-//         reject({ message: '用户名或密码错误' })
-//       }
-//     }, 300)
-//   })
-// }
-// export const updatepassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve({ success: true })
-//     }, 500)
-//   })
-// }
-// export const updatePassword = (data: { oldPassword: string; newPassword: string; rePassword: string }) => {
-//   return axios.post("/admin/updatePassword", data)
-// }
+
+export function getUserInfoApi() {
+  return request({
+    url:'/api/user/info',
+    method:'get'
+  })
+}

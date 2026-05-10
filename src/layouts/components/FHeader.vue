@@ -4,7 +4,7 @@
       <el-icon><Place /></el-icon>
       后台管理
       <el-icon @click="handleAsideWidth">
-        <Fold v-if="store.state.asideWidth === '250px'"/>
+                <Fold v-if="store.asideWidth === '250px'"/>
         <Expand v-else />
       </el-icon>
       <el-icon @click="handleRefresh"><Refresh /></el-icon>
@@ -56,17 +56,17 @@
 
 <script setup>
 import { computed } from 'vue'
-import {Fold, FullScreen, Place, Refresh, ArrowDown, Expand} from "@element-plus/icons-vue";
-import { usehanlelogout, userefreshpassword, usehandleRefresh } from "@/composable/useManager";
-import { useStore } from "vuex";
+import {Fold, Place, Refresh, ArrowDown, Expand} from "@element-plus/icons-vue"
+import { usehanlelogout, userefreshpassword, usehandleRefresh } from "@/composable/useManager"
+import { useUserStore } from '@/store/index'
 
-const store = useStore();
+const store = useUserStore();
 
-// 从store中获取用户信息
-const userName = computed(() => store.state.user.name || '管理员')
-const userAvatar = computed(() => store.state.user.avatar || '')
+// 从 store 中获取用户信息
+const userName = computed(() => store.userInfo?.username || '管理员')
+const userAvatar = computed(() => '')
 const handleAsideWidth = () => {
-  store.commit('handleAsideWidth')
+  store.handleAsideWidth()
 }
 // 使用composable函数
 const { handleLogout } = usehanlelogout();

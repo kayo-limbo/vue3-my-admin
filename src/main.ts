@@ -2,20 +2,23 @@ import { createApp } from 'vue'
 // import './style.css'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+
 // 引入图标组件库
 // import './tailwind.css'
 import './style.css'
-
+import { createPinia} from 'pinia'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+// import store from './store'
 
 const app = createApp(App)
-
+const pinia = createPinia()
 // 全局注册所有图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
+import permission from './directives/permission'
+app.directive('permission', permission)
+app.use(pinia).use(router).use(ElementPlus).mount('#app')
 
-app.use(router).use(ElementPlus).use(store).mount('#app')

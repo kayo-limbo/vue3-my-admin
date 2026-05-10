@@ -1,9 +1,9 @@
-// 1. 生成器配置
+
 generator client {
   provider = "prisma-client-js"
 }
 
-// 2. 数据库连接配置（全文件只能有一个 datasource）
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -16,9 +16,10 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
+  roles     UserRole[]
 }
 
-// 新增 Order 模型，用于统计图表（映射到底层表名 `orders`）
+
 model Order {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -27,7 +28,7 @@ model Order {
 
   @@map("orders")
 }
-// 1. 导航菜单表 (左侧)
+
 model Menu {
   id    Int     @id @default(autoincrement())
   name String
@@ -37,7 +38,6 @@ model Menu {
   order Int     @default(0) // 用于排序
 }
 
-// 2. 快捷入口表 (中间彩色图案)
 model Nav {
   id          Int     @id @default(autoincrement())
   title       String
@@ -49,7 +49,7 @@ model Nav {
   @@map("nav")
 }
 
-// 3. Dashboard 相关表
+
 model dashboard_order {
   id          Int     @id @default(autoincrement())
   title       String
@@ -80,4 +80,40 @@ model dashboard_orders {
   amount    Float?
 
   @@map("dashboard_orders")
+}
+
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  roleName String
+  roleKey String  @unique
+
+  users UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          Int    @id @default(autoincrement())
+  pName        String
+  pCode        String  @unique
+
+  roles RolePermission[]
+}
+
+
+model UserRole {
+  userId Int
+  roleId Int
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+  @@id([userId, roleId])
+}
+
+
+model RolePermission {
+  roleId Int
+  permissionId Int
+  role Role @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+  @@id([roleId, permissionId])
 }

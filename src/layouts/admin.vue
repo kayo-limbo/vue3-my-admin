@@ -4,7 +4,7 @@
       <FHeader />
     </el-header>
     <el-container style="flex: 1;">
-      <el-aside :style="{ width: store.state.asideWidth }" style="height: '100%'; background-color: #ffffff;">
+      <el-aside :style="{ width: store.asideWidth }" style="height: '100%'; background-color: #ffffff;">
         <FMenu />
       </el-aside>
       <el-main style="padding: 0; flex: 1;">
@@ -22,8 +22,8 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
-const store = useStore()
+import { useUserStore } from '@/store/index'
+const store = useUserStore()
 // import { onMounted } from 'vue'
 import FHeader from '@/layouts/components/FHeader.vue'
 import FMenu from '@/layouts/components/FMenu.vue'

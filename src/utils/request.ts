@@ -77,4 +77,22 @@ serverApi.interceptors.request.use((config) => {
   return config
 })
 
-export default service;
+// 响应拦截器：只返回 data，让调用方直接拿到后端返回的 JSON 对象
+serverApi.interceptors.response.use(
+  (res) => res.data,
+  (err) => {
+    if (err.response?.status === 401) {
+      if (router.currentRoute.value.path !== '/login') {
+        localStorage.removeItem('token')
+        router.push('/login')
+        ElMessage.error('登录失效，请重新登录')
+      }
+    } else {
+      const msg = err.response?.data?.message || '请求失败'
+      ElMessage.error(msg)
+    }
+    return Promise.reject(err)
+  }
+)
+
+export default serverApi;

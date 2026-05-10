@@ -1,5 +1,5 @@
 <template>
-  <div class="f-menu" :style="{ width: store.state.asideWidth }">
+  <div class="f-menu" :style="{ width: store.asideWidth }">
     <el-menu :unique-opened="true" :default-active="defaultActive" class="el-menu-vertical-demo" @select="handleSelect" :collapse="isCollapse" :collapse-transition="false">
       <template v-for="(item, index) in asideMenus" :key="index">
         <el-sub-menu v-if="item.child && item.child.length > 0" :index="item.name">
@@ -28,25 +28,23 @@
 </template>
 
 <script setup lang="ts">
-import { ElMenu, ElSubMenu, ElMenuItem } from 'element-plus';
-import {onMounted} from 'vue'
-import {supabase} from '@/utils/supabase'
-import { useStore } from 'vuex'
-const store = useStore()
-import {computed, ref} from 'vue'
-import { useRoute } from 'vue-router'
+import { ElMenu, ElSubMenu, ElMenuItem } from 'element-plus'
+import { onMounted, computed, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { serverApi } from '@/utils/request'
+import { useUserStore } from '@/store/index'
+
+const store = useUserStore()
 const route = useRoute()
-// import { Location, HomeFilled, User, Goods } from "@element-plus/icons-vue";
-import {useRouter} from 'vue-router'
-const defaultActive = ref(route.path)
 const router = useRouter()
+const defaultActive = ref(route.path)
 const handleSelect = (index: string) => {
   if (index) {
     router.push(index)
   }
 }
-const asideMenus = computed(() => store.state.menus)
-const isCollapse = computed(() => store.state.asideWidth === '64px')
+const asideMenus = computed(() => store.menus)
+const isCollapse = computed(() => store.asideWidth === '64px')
 const formatMenus = (list:any[]) => {
   const tree:any[] = []
   const map:any = {}
@@ -65,15 +63,17 @@ const formatMenus = (list:any[]) => {
   return tree
 }
 onMounted(async () => {
-  const {data, error} = await supabase.from('menus').select('*').order('order')
-  if(error) {
-    console.log('数据没拿到', error)
-  }else{
-    console.log('数据拿到了', data)
+  try {
+    const res = await serverApi.get('/api/menus')
+    const data = (res as any).data ?? res
+    const list = Array.isArray(data) ? data : []
+    console.log('菜单数据拿到了', list)
+    const treeData = formatMenus(list)
+    store.menus = treeData
+    console.log('已存入菜单', treeData)
+  } catch (err) {
+    console.error('获取菜单失败', err)
   }
-  const treeData = formatMenus(data || [])
-  store.commit('SET_MENUS', treeData)
-  console.log('已存入菜单', treeData)
 })
 
 </script>

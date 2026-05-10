@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import {useUserStore} from '@/store/index'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -123,16 +124,33 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
+  const store = useUserStore()
   const token = localStorage.getItem('token')
+
+  // 未登录且不是去登录页 → 去登录
   if (to.path !== '/login' && !token) {
     localStorage.removeItem('token')
     next('/login')
-  } else {
-    let title = to.meta.title as string
-    document.title = title ? `${title} - 后台管理系统` : '后台管理系统'
-    next()
+    return
   }
+
+  // 设置标题
+  const title = to.meta.title as string
+  document.title = title ? `${title} - 后台管理系统` : '后台管理系统'
+
+  // 已登录但权限尚未拉取 → 先拉权限再放行
+  if (token && store.ruleNames.length === 0) {
+    try {
+      await store.fetchUserPermissions()
+    } catch (error) {
+      store.resetState()
+      next('/login')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router

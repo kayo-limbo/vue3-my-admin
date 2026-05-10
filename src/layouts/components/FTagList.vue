@@ -1,5 +1,5 @@
 <template>
-  <div class="f-tag-list" :style="{ left: store.state.asideWidth }">
+  <div class="f-tag-list":style="{ left: store.asideWidth }">
     <el-tabs
       v-model="editableTabsValue"
       type="card"
@@ -35,11 +35,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useStore } from 'vuex'
+import { useUserStore } from '@/store/index'
 import { useRouter, useRoute } from 'vue-router'
 import type { TabPaneName } from 'element-plus'
 
-const store = useStore()
+const store = useUserStore()
 const router = useRouter()
 const route = useRoute()
 
